@@ -10,7 +10,7 @@ import User from '../models/User.js';
 const router = express.Router();
 
 //@route  GET api/auth
-//@desc   Test route, recieves a token and returns info about users profile
+//@desc   Test route, receives a token and returns info about users profile
 //@access Public
 router.get('/', auth, async (req, res) => {
   try {
