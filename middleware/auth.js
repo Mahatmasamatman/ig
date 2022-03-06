@@ -12,7 +12,7 @@ export default function (req, res, next) {
 
   // Verify token
   try {
-    jwt.verify(token, config.get('jwtSecret'), (error, decoded) => {
+    jwt.verify(token, config.get('jwtAccessSecret'), (error, decoded) => {
       if (!error) {
         req.user = decoded.user;
         next();

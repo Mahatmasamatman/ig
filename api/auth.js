@@ -10,8 +10,8 @@ import User from '../models/User.js';
 const router = express.Router();
 
 //@route  GET api/auth
-//@desc   Test route, receives a token and returns info about users profile
-//@access Public
+//@desc   Test route - if it receives a valid jwt, it returns info about users profile
+//@access Private
 router.get('/', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
@@ -22,15 +22,15 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-const userCreationValidation = [
+const userAuthenticationValidation = [
   check('email', 'Please include a valid email').isEmail(),
   check('password', 'Password is required').exists(),
 ];
 
 // @route    POST api/auth
-// @desc     Authenticate user & get token
+// @desc     Authenticate user & return access and refresh token
 // @access   Public
-router.post('/', userCreationValidation, async (req, res) => {
+router.post('/', userAuthenticationValidation, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -60,19 +60,16 @@ router.post('/', userCreationValidation, async (req, res) => {
       },
     };
 
-    jwt.sign(
-      payload,
-      config.get('jwtSecret'),
-      { expiresIn: '5 days' },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
+    const accessToken = jwt.sign(payload, config.get('jwtAccessSecret'), {
+      expiresIn: config.get('jwtAccessExpiration'),
+    });
+    const refreshToken = jwt.sign(payload, config.get('jwtRefreshSecret'), {
+      expiresIn: config.get('jwtRefreshExpiration'),
+    });
+
+    res.json({ accessToken, refreshToken });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
   }
 });
-
-export default router;

@@ -18,7 +18,7 @@ const userValidation = [
 ];
 
 //@route  POST api/users
-//@desc   Register user
+//@desc   Register a new user
 //@access Public
 export default router.post('/', userValidation, async (req, res) => {
   const errors = validationResult(req);
@@ -61,8 +61,8 @@ export default router.post('/', userValidation, async (req, res) => {
 
     jwt.sign(
       payload,
-      config.get('jwtSecret'),
-      { expiresIn: '5 days' },
+      config.get('jwtAccessSecret'),
+      { expiresIn: config.get('jwtAccessExpiration') },
       (err, token) => {
         if (err) throw err;
         res.json({ token });
