@@ -10,7 +10,7 @@ const app = express();
 //Init Middleware - it allows routes to access the data in req.body
 app.use(express.json({ extended: false }));
 
-app.get('/', (req, res) => res.send('API Runnning'));
+app.get('/', (req, res) => res.send('API is runnning'));
 
 // Define routes
 app.use('/api/users', users);
